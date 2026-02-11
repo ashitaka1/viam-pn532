@@ -1,0 +1,6 @@
+# Binary
+viam-pn532
+
+# Environment
+.env
+.env.local
