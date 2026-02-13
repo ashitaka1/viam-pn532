@@ -30,7 +30,7 @@ Viam module wrapping the go-pn532 NFC reader library as a sensor component, enab
 
 ### Milestones
 
-1. ⏳ Skeleton — config, registration, stub Readings/DoCommand/Close, verify loads in viam-server
+1. ✅ Skeleton — config, registration, stub Readings/DoCommand/Close, verify loads in viam-server
 2. ⏳ Device lifecycle — connectDevice, full Reconfigure/Close, verify hardware connection
 3. ⏳ Polling + Readings — background session, tag state caching, full Readings output
 4. ⏳ DoCommand — await_scan, write_text, write_ndef, read_ndef, diagnostics, get_firmware
@@ -72,14 +72,13 @@ Implements `rdk:component:sensor` with model triplet `viam:nfc:pn532`.
 viam-pn532/
   cmd/module/
     main.go              -- ModularMain entry point
-  pn532sensor/
-    config.go            -- Config struct + Validate
-    sensor.go            -- Registration, struct, constructor
-    lifecycle.go         -- Reconfigure (connect/teardown) + Close
-    transport.go         -- Transport factory from config + blank imports for detectors
-    polling.go           -- Background polling session, tag state caching
-    readings.go          -- Readings() from cached state
-    docommand.go         -- DoCommand dispatch (write_text, write_ndef, diagnostics)
+  config.go              -- Config struct + Validate
+  sensor.go              -- Registration, struct, constructor
+  lifecycle.go           -- Reconfigure (connect/teardown) + Close
+  transport.go           -- Transport factory from config + blank imports for detectors
+  polling.go             -- Background polling session, tag state caching
+  readings.go            -- Readings() from cached state
+  docommand.go           -- DoCommand dispatch (write_text, write_ndef, diagnostics)
   meta.json
   Makefile
   go.mod

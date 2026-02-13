@@ -4,9 +4,9 @@ This file provides project-specific guidance to Claude Code (claude.ai/code) for
 
 ## Current Status
 
-Project phase: Planning
+Project phase: Milestone 1 complete
 
-Architecture designed, not yet implemented. See `project_spec.md` for the full plan.
+Skeleton implemented with config validation, stub Readings/DoCommand/Close. See `project_spec.md` for the full plan.
 
 ## About This Project
 
@@ -24,7 +24,7 @@ make test          # Run all tests with race detection
 
 Run a single test:
 ```bash
-go test -v -race -run TestName ./pn532sensor/...
+go test -v -race -run TestName ./...
 ```
 
 ### Build / Run

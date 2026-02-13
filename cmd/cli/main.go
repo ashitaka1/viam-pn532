@@ -22,7 +22,7 @@ func realMain() error {
 	deps := resource.Dependencies{}
 	// can load these from a remote machine if you need
 
-	cfg := pn532.Config{}
+	cfg := pn532.Config{Transport: "auto"}
 
 	thing, err := pn532.NewPn532(ctx, deps, sensor.Named("foo"), &cfg, logger)
 	if err != nil {

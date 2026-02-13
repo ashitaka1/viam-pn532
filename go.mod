@@ -199,4 +199,6 @@ require (
 	gorgonia.org/vecf32 v0.9.0 // indirect
 	gorgonia.org/vecf64 v0.9.0 // indirect
 	nhooyr.io/websocket v1.8.7 // indirect
+	periph.io/x/conn/v3 v3.7.2 // indirect
+	periph.io/x/host/v3 v3.8.5 // indirect
 )
