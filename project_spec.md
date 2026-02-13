@@ -50,11 +50,12 @@ Viam module wrapping the go-pn532 NFC reader library as a sensor component, enab
 - `go.viam.com/rdk` — Viam Go SDK (sensor API, module framework)
 
 ### Platform/Deployment
-- Cross-compiled for linux/arm64 (RPi) and linux/amd64
+- Cross-compiled for linux/arm64 (RPi), linux/amd64, and darwin/arm64 (macOS)
+- macOS support for USB-connected PN532 boards (UART over USB-serial)
 - Deployed via Viam module registry
 
 ### Infrastructure
-- Hardware: NXP PN532 NFC reader boards connected to SBC via UART/I2C/SPI
+- Hardware: NXP PN532 NFC reader boards connected via UART/I2C/SPI (SBC) or USB-serial (macOS)
 - SBC permissions: user must be in `dialout` (UART), `i2c`, or `spidev` groups
 
 ## Technical Architecture
