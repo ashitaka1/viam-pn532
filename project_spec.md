@@ -21,6 +21,7 @@ Viam module wrapping the go-pn532 NFC reader library as a sensor component, enab
 
 ### Required
 - Continuous tag polling via `Readings()` (cached, no hardware I/O per call)
+- Reactive tag detection via `DoCommand` `await_scan` (blocks until tag presented)
 - NDEF text/URI read on tag detection
 - NDEF write via `DoCommand`
 - Auto-detection and manual transport configuration
@@ -32,7 +33,7 @@ Viam module wrapping the go-pn532 NFC reader library as a sensor component, enab
 1. ⏳ Skeleton — config, registration, stub Readings/DoCommand/Close, verify loads in viam-server
 2. ⏳ Device lifecycle — connectDevice, full Reconfigure/Close, verify hardware connection
 3. ⏳ Polling + Readings — background session, tag state caching, full Readings output
-4. ⏳ DoCommand — write_text, write_ndef, read_ndef, diagnostics, get_firmware
+4. ⏳ DoCommand — await_scan, write_text, write_ndef, read_ndef, diagnostics, get_firmware
 5. ⏳ Cross-compile + deploy — arm64 build, RPi testing, all transports
 
 ### Nice-to-Have
@@ -60,7 +61,7 @@ Viam module wrapping the go-pn532 NFC reader library as a sensor component, enab
 
 ### Architecture Decision: Sensor API
 
-Implements `rdk:component:sensor` with model triplet `zaparoo:nfc:pn532`.
+Implements `rdk:component:sensor` with model triplet `viam:nfc:pn532`.
 
 `Readings()` maps to tag detection state — returns cached tag info (UID, type, NDEF content) with no hardware I/O per call. `DoCommand` handles writes, diagnostics, and extended operations. Single component (not reader+writer split) because go-pn532's `polling.Session` already coordinates write pausing internally.
 
@@ -88,7 +89,7 @@ viam-pn532/
 ```json
 {
   "transport": "uart",
-  "device_path": "/dev/ttyUSB0",
+  "device_path": "/dev/ttyAMA0",
   "poll_interval_ms": 250,
   "card_removal_timeout_ms": 600,
   "read_ndef": true,
@@ -97,7 +98,7 @@ viam-pn532/
 }
 ```
 
-`transport: "auto"` runs the detection registry in parallel. When explicit, `device_path` is required.
+`transport: "auto"` runs the detection registry in parallel. When explicit, `device_path` is required. Typical RPi device paths: `/dev/ttyAMA0` or `/dev/serial0` (UART via GPIO 14/15), `/dev/i2c-1` (I2C via GPIO 2/3), `/dev/spidev0.0` (SPI via GPIO 7-11).
 
 ### API Mapping
 
@@ -107,6 +108,7 @@ viam-pn532/
 | `DetectedTag` (UID, type) | `Readings()` | `uid`, `tag_type`, `manufacturer`, `is_genuine` |
 | `tagops.ReadNDEF()` | `Readings()` | `ndef_text`, `ndef_record_count` (auto-read on detect) |
 | `tagops.GetTagInfo()` | `Readings()` | `ntag_variant`, `mifare_variant`, `user_memory_bytes` |
+| `polling.Session` + channel | `DoCommand` | `{"action": "await_scan"}` — blocks until tag detected or ctx cancelled. Optional `timeout_ms` for bounded wait. |
 | `Session.WriteToNextTag()` | `DoCommand` | `{"action": "write_text", "text": "..."}` |
 | `Tag.WriteNDEF()` | `DoCommand` | `{"action": "write_ndef", "records": [...]}` |
 | Device health/firmware | `Readings()` + `DoCommand` | `device_healthy`, `firmware_version`, `{"action": "diagnostics"}` |
@@ -116,6 +118,8 @@ viam-pn532/
 ### Data Flow
 
 **Readings** are a pure memory read. The polling goroutine writes to `cachedTagState` under a lock; `Readings()` reads the cache. No hardware I/O per call — critical for Viam's data collection scheduler.
+
+**await_scan** blocks the caller until the polling goroutine detects a new tag. The `OnCardDetected` callback signals a channel; `await_scan` waits on that channel (with optional `timeout_ms` deadline, or the caller's context). In-process callers (e.g., another module using `FromDependencies`) can block indefinitely on their own context. External callers (CLI, SDK over network) should use `timeout_ms` to avoid gRPC timeouts and retry in a loop.
 
 **Writes** go through `Session.WriteToNextTag` which pauses polling, waits for a tag, writes, and resumes. The caller blocks until complete or timeout.
 
