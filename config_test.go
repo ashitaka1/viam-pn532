@@ -4,13 +4,13 @@ import (
 	"context"
 	"testing"
 
+	pn532lib "github.com/ZaparooProject/go-pn532"
 	sensor "go.viam.com/rdk/components/sensor"
 	"go.viam.com/rdk/logging"
-	"go.viam.com/rdk/resource"
 )
 
 func TestValidateTransportValues(t *testing.T) {
-	valid := []string{"", "auto", "uart", "i2c", "spi"}
+	valid := []string{"uart", "i2c", "spi"}
 	for _, transport := range valid {
 		cfg := &Config{Transport: transport, DevicePath: "/dev/test"}
 		_, _, err := cfg.Validate("test")
@@ -19,7 +19,7 @@ func TestValidateTransportValues(t *testing.T) {
 		}
 	}
 
-	invalid := []string{"usb", "bluetooth", "serial", "UART"}
+	invalid := []string{"", "auto", "usb", "bluetooth", "serial", "UART"}
 	for _, transport := range invalid {
 		cfg := &Config{Transport: transport, DevicePath: "/dev/test"}
 		_, _, err := cfg.Validate("test")
@@ -45,43 +45,44 @@ func TestValidateDevicePathRequirement(t *testing.T) {
 		}
 	}
 
-	// Auto and empty don't require device_path
-	for _, transport := range []string{"", "auto"} {
-		cfg := &Config{Transport: transport}
-		_, _, err := cfg.Validate("test")
-		if err != nil {
-			t.Errorf("transport %q without device_path should pass: %v", transport, err)
-		}
+	// Empty transport is rejected
+	cfg := &Config{}
+	_, _, err := cfg.Validate("test")
+	if err == nil {
+		t.Error("empty transport should fail validation")
 	}
 }
 
 func newTestSensor(t *testing.T, cfg *Config) *pn532Sensor {
 	t.Helper()
-	logger := logging.NewTestLogger(t)
-	s, err := NewPn532(context.Background(), resource.Dependencies{}, sensor.Named("test"), cfg, logger)
-	if err != nil {
-		t.Fatalf("NewPn532 failed: %v", err)
+	cancelCtx, cancelFunc := context.WithCancel(context.Background())
+	t.Cleanup(cancelFunc)
+
+	resolved := applyConfigDefaults(cfg)
+
+	return &pn532Sensor{
+		name:       sensor.Named("test"),
+		logger:     logging.NewTestLogger(t),
+		cfg:        resolved,
+		cancelCtx:  cancelCtx,
+		cancelFunc: cancelFunc,
 	}
-	return s.(*pn532Sensor)
 }
 
 func TestValidateDefaults(t *testing.T) {
 	// Zero-value fields get populated with defaults
-	s := newTestSensor(t, &Config{})
-	if s.cfg.PollIntervalMs == 0 {
-		t.Error("PollIntervalMs should be set to a default, got 0")
+	s := newTestSensor(t, &Config{Transport: "i2c", DevicePath: "/dev/i2c-1"})
+	if s.cfg.PollIntervalMs != defaultPollIntervalMs {
+		t.Errorf("PollIntervalMs = %d, want %d", s.cfg.PollIntervalMs, defaultPollIntervalMs)
 	}
-	if s.cfg.CardRemovalTimeoutMs == 0 {
-		t.Error("CardRemovalTimeoutMs should be set to a default, got 0")
+	if s.cfg.CardRemovalTimeoutMs != defaultCardRemovalTimeoutMs {
+		t.Errorf("CardRemovalTimeoutMs = %d, want %d", s.cfg.CardRemovalTimeoutMs, defaultCardRemovalTimeoutMs)
 	}
-	if s.cfg.ConnectTimeoutSec == 0 {
-		t.Error("ConnectTimeoutSec should be set to a default, got 0")
+	if s.cfg.ConnectTimeoutSec != defaultConnectTimeoutSec {
+		t.Errorf("ConnectTimeoutSec = %d, want %d", s.cfg.ConnectTimeoutSec, defaultConnectTimeoutSec)
 	}
 	if s.cfg.ReadNDEF == nil || !*s.cfg.ReadNDEF {
 		t.Error("ReadNDEF should default to true")
-	}
-	if s.cfg.Transport != "auto" {
-		t.Errorf("Transport should default to \"auto\", got %q", s.cfg.Transport)
 	}
 
 	// Explicit values are preserved
@@ -108,8 +109,8 @@ func TestValidateDefaults(t *testing.T) {
 	}
 }
 
-func TestReadingsReturnsStatus(t *testing.T) {
-	s := newTestSensor(t, &Config{})
+func TestReadingsNotConnected(t *testing.T) {
+	s := newTestSensor(t, &Config{Transport: "i2c", DevicePath: "/dev/i2c-1"})
 	readings, err := s.Readings(context.Background(), nil)
 	if err != nil {
 		t.Fatalf("Readings returned error: %v", err)
@@ -132,8 +133,49 @@ func TestReadingsReturnsStatus(t *testing.T) {
 	}
 }
 
+func TestReadingsConnected(t *testing.T) {
+	mock := pn532lib.NewMockTransport()
+	device, err := pn532lib.New(mock)
+	if err != nil {
+		t.Fatalf("failed to create mock device: %v", err)
+	}
+
+	cancelCtx, cancelFunc := context.WithCancel(context.Background())
+	defer cancelFunc()
+
+	s := &pn532Sensor{
+		name:       sensor.Named("test"),
+		logger:     logging.NewTestLogger(t),
+		cfg:        &Config{Transport: "i2c", DevicePath: "/dev/i2c-1"},
+		device:     device,
+		cancelCtx:  cancelCtx,
+		cancelFunc: cancelFunc,
+	}
+
+	readings, err := s.Readings(context.Background(), nil)
+	if err != nil {
+		t.Fatalf("Readings returned error: %v", err)
+	}
+
+	expected := map[string]interface{}{
+		"status":         "connected",
+		"tag_present":    false,
+		"device_healthy": true,
+	}
+	for key, want := range expected {
+		got, ok := readings[key]
+		if !ok {
+			t.Errorf("missing key %q in readings", key)
+			continue
+		}
+		if got != want {
+			t.Errorf("readings[%q] = %v, want %v", key, got, want)
+		}
+	}
+}
+
 func TestDoCommandUnknownAction(t *testing.T) {
-	s := newTestSensor(t, &Config{})
+	s := newTestSensor(t, &Config{Transport: "i2c", DevicePath: "/dev/i2c-1"})
 
 	_, err := s.DoCommand(context.Background(), map[string]interface{}{"action": "bogus"})
 	if err == nil {
@@ -146,16 +188,8 @@ func TestDoCommandUnknownAction(t *testing.T) {
 	}
 }
 
-func TestConstructorDoesNotMutateInput(t *testing.T) {
-	cfg := &Config{Transport: "uart", DevicePath: "/dev/ttyAMA0"}
-	newTestSensor(t, cfg)
-	if cfg.PollIntervalMs != 0 {
-		t.Error("constructor should not mutate the input config")
-	}
-}
-
 func TestCloseIdempotent(t *testing.T) {
-	s := newTestSensor(t, &Config{})
+	s := newTestSensor(t, &Config{Transport: "i2c", DevicePath: "/dev/i2c-1"})
 
 	for i := range 3 {
 		err := s.Close(context.Background())

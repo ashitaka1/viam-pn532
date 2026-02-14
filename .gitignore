@@ -23,3 +23,6 @@ bin
 # Environment
 .env
 .env.local
+
+# Viam CLI data
+viam-cli-data.json

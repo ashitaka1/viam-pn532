@@ -36,7 +36,8 @@ Viam module wrapping the go-pn532 NFC reader library as a sensor component, enab
 4. ⏳ DoCommand — await_scan, write_text, write_ndef, read_ndef, diagnostics, get_firmware
 5. ⏳ Cross-compile + deploy — arm64 build, RPi testing, all transports
 
-### Nice-to-Have
+### Post-MVP
+- Auto-detection transport (`transport: "auto"`) — go-pn532's I2C auto-detection doesn't reliably find PN532 devices (raw I2C scan misses devices that need PN532-specific framing); requires upstream fix or custom detection logic
 - Viam data management integration (structured tag event logging)
 - Multiple simultaneous readers (multiple component instances)
 
@@ -98,7 +99,7 @@ viam-pn532/
 }
 ```
 
-`transport: "auto"` runs the detection registry in parallel. When explicit, `device_path` is required. Typical RPi device paths: `/dev/ttyAMA0` or `/dev/serial0` (UART via GPIO 14/15), `/dev/i2c-1` (I2C via GPIO 2/3), `/dev/spidev0.0` (SPI via GPIO 7-11).
+`transport` and `device_path` are required. Auto-detection is deferred to post-MVP. Typical RPi device paths: `/dev/ttyAMA0` or `/dev/serial0` (UART via GPIO 14/15), `/dev/i2c-1` (I2C via GPIO 2/3), `/dev/spidev0.0` (SPI via GPIO 7-11).
 
 ### API Mapping
 

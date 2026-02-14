@@ -8,6 +8,14 @@ func (s *pn532Sensor) Readings(ctx context.Context, extra map[string]interface{}
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
+	if s.device != nil {
+		return map[string]interface{}{
+			"status":         "connected",
+			"tag_present":    false,
+			"device_healthy": true,
+		}, nil
+	}
+
 	return map[string]interface{}{
 		"status":         "not_connected",
 		"tag_present":    false,

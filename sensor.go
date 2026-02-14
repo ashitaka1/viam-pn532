@@ -4,6 +4,7 @@ import (
 	"context"
 	"sync"
 
+	pn532 "github.com/ZaparooProject/go-pn532"
 	sensor "go.viam.com/rdk/components/sensor"
 	"go.viam.com/rdk/logging"
 	"go.viam.com/rdk/resource"
@@ -26,6 +27,7 @@ type pn532Sensor struct {
 	name   resource.Name
 	logger logging.Logger
 	cfg    *Config
+	device *pn532.Device
 
 	cancelCtx  context.Context
 	cancelFunc func()
@@ -47,13 +49,8 @@ const (
 	defaultConnectTimeoutSec   = 10
 )
 
-func NewPn532(ctx context.Context, deps resource.Dependencies, name resource.Name, conf *Config, logger logging.Logger) (sensor.Sensor, error) {
-	cancelCtx, cancelFunc := context.WithCancel(context.Background())
-
+func applyConfigDefaults(conf *Config) *Config {
 	cfg := *conf
-	if cfg.Transport == "" {
-		cfg.Transport = "auto"
-	}
 	if cfg.PollIntervalMs <= 0 {
 		cfg.PollIntervalMs = defaultPollIntervalMs
 	}
@@ -67,11 +64,25 @@ func NewPn532(ctx context.Context, deps resource.Dependencies, name resource.Nam
 		readNDEF := true
 		cfg.ReadNDEF = &readNDEF
 	}
+	return &cfg
+}
+
+func NewPn532(ctx context.Context, deps resource.Dependencies, name resource.Name, conf *Config, logger logging.Logger) (sensor.Sensor, error) {
+	cancelCtx, cancelFunc := context.WithCancel(context.Background())
+
+	cfg := applyConfigDefaults(conf)
+
+	device, err := connectDevice(ctx, cfg, logger)
+	if err != nil {
+		cancelFunc()
+		return nil, err
+	}
 
 	s := &pn532Sensor{
 		name:       name,
 		logger:     logger,
-		cfg:        &cfg,
+		cfg:        cfg,
+		device:     device,
 		cancelCtx:  cancelCtx,
 		cancelFunc: cancelFunc,
 	}

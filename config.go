@@ -5,7 +5,7 @@ import (
 	"slices"
 )
 
-var validTransports = []string{"auto", "uart", "i2c", "spi"}
+var validTransports = []string{"uart", "i2c", "spi"}
 
 // Config holds the configuration for the PN532 sensor component.
 type Config struct {
@@ -19,12 +19,13 @@ type Config struct {
 }
 
 func (cfg *Config) Validate(path string) ([]string, []string, error) {
-	if cfg.Transport != "" && !slices.Contains(validTransports, cfg.Transport) {
+	if cfg.Transport == "" {
+		return nil, nil, fmt.Errorf("transport is required, must be one of %v", validTransports)
+	}
+	if !slices.Contains(validTransports, cfg.Transport) {
 		return nil, nil, fmt.Errorf("invalid transport %q, must be one of %v", cfg.Transport, validTransports)
 	}
-
-	needsPath := cfg.Transport != "" && cfg.Transport != "auto"
-	if needsPath && cfg.DevicePath == "" {
+	if cfg.DevicePath == "" {
 		return nil, nil, fmt.Errorf("device_path is required when transport is %q", cfg.Transport)
 	}
 

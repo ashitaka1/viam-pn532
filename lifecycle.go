@@ -12,6 +12,13 @@ func (s *pn532Sensor) Close(_ context.Context) error {
 		return nil
 	}
 	s.closed = true
+
+	if s.device != nil {
+		if err := s.device.Close(); err != nil {
+			s.logger.Errorw("error closing PN532 device", "error", err)
+		}
+	}
+
 	s.cancelFunc()
 	return nil
 }
