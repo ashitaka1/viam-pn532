@@ -4,9 +4,9 @@ This file provides project-specific guidance to Claude Code (claude.ai/code) for
 
 ## Current Status
 
-Project phase: Milestone 1 complete
+Project phase: Milestone 2 complete
 
-Skeleton implemented with config validation, stub Readings/DoCommand/Close. See `project_spec.md` for the full plan.
+Device lifecycle (connect, close, health reporting) validated on real hardware via I2C. See `project_spec.md` for the full plan.
 
 ## About This Project
 
