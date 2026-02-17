@@ -34,5 +34,10 @@ func connectDevice(ctx context.Context, cfg *Config, logger logging.Logger) (*pn
 	return pn532.ConnectDevice(ctx, cfg.DevicePath,
 		pn532.WithConnectTimeout(timeout),
 		pn532.WithTransportFactory(transportFactory(cfg.Transport)),
+		// Use more retries to survive reconnection after a kill. The PN532 may
+		// be busy finishing a stale InListPassiveTarget command (up to ~5s
+		// hardware timeout) and will NAK I2C addresses until it's done. 10
+		// retries with exponential backoff spans the full connect timeout window.
+		pn532.WithConnectionRetries(10),
 	)
 }
