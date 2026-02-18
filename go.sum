@@ -87,8 +87,8 @@ github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hC
 github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da/go.mod h1:Q73ZrmVTwzkszR9V5SSuryQ31EELlFMUz1kKyl939pY=
 github.com/armon/go-radix v0.0.0-20180808171621-7fddfc383310/go.mod h1:ufUuZ+zHj4x4TnLV4JWEpy2hxWSpsRywHrMgIH9cCH8=
 github.com/aryann/difflib v0.0.0-20170710044230-e206f873d14a/go.mod h1:DAHtR1m6lCRdSC2Tm3DSWRPvIPr6xNKyeHdqDQSQT+A=
-github.com/ashitaka1/go-pn532 v0.20.4-0.20260214214633-0f449be1cfea h1:QTf6Ux2DXNW1ZcEuEfh0tRe/wZkRhjrpn3S6LarVuHc=
-github.com/ashitaka1/go-pn532 v0.20.4-0.20260214214633-0f449be1cfea/go.mod h1:38r+NvAyNsUa/McJC4FEk2+uxOzrN1AUgrh/fpc0oLk=
+github.com/ashitaka1/go-pn532 v0.20.4-0.20260218201516-fe66c87c610e h1:ZG6Kbs3QplpxkKofinB12cesSJ99d9liqhAzE7i2HO8=
+github.com/ashitaka1/go-pn532 v0.20.4-0.20260218201516-fe66c87c610e/go.mod h1:7mcKQR1Q7X1Ax2sxVqTDm/bqmpvp1uBBvrbQr3YnOpE=
 github.com/aws/aws-lambda-go v1.13.3/go.mod h1:4UKl9IzQMoD+QF79YdCuzCwp8VbmG4VAQwij/eHl5CU=
 github.com/aws/aws-sdk-go v1.27.0/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/aws/aws-sdk-go v1.38.20 h1:QbzNx/tdfATbdKfubBpkt84OM6oBkxQZRw6+bW2GyeA=

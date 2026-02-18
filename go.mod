@@ -210,4 +210,4 @@ require (
 	periph.io/x/host/v3 v3.8.5 // indirect
 )
 
-replace github.com/ZaparooProject/go-pn532 => github.com/ashitaka1/go-pn532 v0.20.4-0.20260214214633-0f449be1cfea
+replace github.com/ZaparooProject/go-pn532 => github.com/ashitaka1/go-pn532 v0.20.4-0.20260218201516-fe66c87c610e

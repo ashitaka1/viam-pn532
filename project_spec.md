@@ -32,7 +32,7 @@ Viam module wrapping the go-pn532 NFC reader library as a sensor component, enab
 
 1. ✅ Skeleton — config, registration, stub Readings/DoCommand/Close, verify loads in viam-server
 2. ✅ Device lifecycle — connectDevice, full Reconfigure/Close, verify hardware connection
-3. ⏳ Polling + Readings — background session, tag state caching, full Readings output
+3. ✅ Polling + Readings — background session, tag state caching, full Readings output
 4. ⏳ DoCommand — await_scan, write_text, write_ndef, read_ndef, diagnostics, get_firmware
 5. ⏳ Cross-compile + deploy — arm64 build, RPi testing, all transports
 
