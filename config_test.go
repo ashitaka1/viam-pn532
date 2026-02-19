@@ -67,6 +67,7 @@ func newTestSensor(t *testing.T, cfg *Config) *pn532Sensor {
 		cfg:        resolved,
 		cancelCtx:  cancelCtx,
 		cancelFunc: cancelFunc,
+		scanNotify: make(chan tagState, 1),
 	}
 }
 
@@ -91,6 +92,7 @@ func newTestSensorWithDevice(t *testing.T, cfg *Config) (*pn532Sensor, *pn532lib
 		device:     device,
 		cancelCtx:  cancelCtx,
 		cancelFunc: cancelFunc,
+		scanNotify: make(chan tagState, 1),
 		state:      tagState{deviceHealthy: true},
 	}
 	return s, mock
