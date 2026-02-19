@@ -31,8 +31,9 @@ type pn532Sensor struct {
 	logger  logging.Logger
 	cfg     *Config
 	device  *pn532.Device
-	session *polling.Session
-	state   tagState
+	session    *polling.Session
+	state      tagState
+	scanNotify chan tagState
 
 	cancelCtx  context.Context
 	cancelFunc func()
@@ -90,6 +91,7 @@ func NewPn532(ctx context.Context, _ resource.Dependencies, name resource.Name, 
 		cfg:        cfg,
 		cancelCtx:  cancelCtx,
 		cancelFunc: cancelFunc,
+		scanNotify: make(chan tagState, 1),
 	}
 
 	s.startSession(device)
@@ -174,6 +176,14 @@ func (s *pn532Sensor) onCardDetected(ctx context.Context, detectedTag *pn532.Det
 	s.state.ntagVariant = ntagVariant
 	s.state.mifareVariant = mifareVariant
 	s.state.userMemoryBytes = userMemoryBytes
+
+	// Deliver snapshot to any await_scan waiter. Drain first so rapid
+	// re-detections always deliver the freshest state.
+	select {
+	case <-s.scanNotify:
+	default:
+	}
+	s.scanNotify <- s.state
 
 	return nil
 }

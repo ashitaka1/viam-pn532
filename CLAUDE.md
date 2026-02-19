@@ -4,9 +4,9 @@ This file provides project-specific guidance to Claude Code (claude.ai/code) for
 
 ## Current Status
 
-Project phase: Milestone 3 complete
+Project phase: Milestone 4 in progress
 
-Polling, tag detection, and Readings validated on real hardware via I2C. See `project_spec.md` for the full plan.
+DoCommand `await_scan` and `diagnostics` implemented; write actions (`write_text`, `write_ndef`) deferred pending writable test hardware. See `project_spec.md` for the full plan.
 
 ## About This Project
 

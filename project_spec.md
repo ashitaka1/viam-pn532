@@ -33,11 +33,12 @@ Viam module wrapping the go-pn532 NFC reader library as a sensor component, enab
 1. ✅ Skeleton — config, registration, stub Readings/DoCommand/Close, verify loads in viam-server
 2. ✅ Device lifecycle — connectDevice, full Reconfigure/Close, verify hardware connection
 3. ✅ Polling + Readings — background session, tag state caching, full Readings output
-4. ⏳ DoCommand — await_scan, write_text, write_ndef, read_ndef, diagnostics, get_firmware
+4. ✅ DoCommand (partial) — await_scan and diagnostics (includes firmware version) implemented; write_text and write_ndef deferred pending writable test hardware
 5. ⏳ Cross-compile + deploy — arm64 build, RPi testing, all transports
 
 ### Post-MVP
 - Auto-detection transport (`transport: "auto"`) — go-pn532's I2C auto-detection doesn't reliably find PN532 devices (raw I2C scan misses devices that need PN532-specific framing); requires upstream fix or custom detection logic
+- Write actions (`write_text`, `write_ndef`) — deferred from milestone 4; requires writable NFC test hardware to validate
 - Viam data management integration (structured tag event logging)
 - Multiple simultaneous readers (multiple component instances)
 
@@ -110,9 +111,9 @@ viam-pn532/
 | `tagops.ReadNDEF()` | `Readings()` | `ndef_text`, `ndef_record_count` (auto-read on detect) |
 | `tagops.GetTagInfo()` | `Readings()` | `ntag_variant`, `mifare_variant`, `user_memory_bytes` |
 | `polling.Session` + channel | `DoCommand` | `{"action": "await_scan"}` — blocks until tag detected or ctx cancelled. Optional `timeout_ms` for bounded wait. |
-| `Session.WriteToNextTag()` | `DoCommand` | `{"action": "write_text", "text": "..."}` |
-| `Tag.WriteNDEF()` | `DoCommand` | `{"action": "write_ndef", "records": [...]}` |
-| Device health/firmware | `Readings()` + `DoCommand` | `device_healthy`, `firmware_version`, `{"action": "diagnostics"}` |
+| `Session.WriteToNextTag()` | `DoCommand` (deferred) | `{"action": "write_text", "text": "..."}` — deferred pending writable test hardware |
+| `Tag.WriteNDEF()` | `DoCommand` (deferred) | `{"action": "write_ndef", "records": [...]}` — deferred pending writable test hardware |
+| Device health/firmware | `Readings()` + `DoCommand` | `device_healthy`, `firmware_version`, `{"action": "diagnostics"}` (firmware included in diagnostics output) |
 | Tag removal | `Readings()` | `tag_present: false` |
 | Device disconnect | `Readings()` | `device_healthy: false` |
 
