@@ -3,7 +3,7 @@ module pn532
 go 1.25.1
 
 require (
-	github.com/ashitaka1/go-pn532 v0.1.0
+	github.com/ashitaka1/go-pn532 v0.1.1
 	go.viam.com/rdk v0.113.0
 )
 
