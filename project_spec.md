@@ -64,7 +64,7 @@ Viam module wrapping the go-pn532 NFC reader library as a sensor component, enab
 
 ### Architecture Decision: Sensor API
 
-Implements `rdk:component:sensor` with model triplet `viam:nfc:pn532`.
+Implements `rdk:component:sensor` with model triplet `avery:nfc:pn532`.
 
 `Readings()` maps to tag detection state — returns cached tag info (UID, type, NDEF content) with no hardware I/O per call. `DoCommand` handles writes, diagnostics, and extended operations. Single component (not reader+writer split) because go-pn532's `polling.Session` already coordinates write pausing internally.
 

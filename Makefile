@@ -14,15 +14,6 @@ build: $(MODULE_BINARY)
 $(MODULE_BINARY): Makefile go.mod *.go cmd/module/*.go
 	GOOS=$(VIAM_BUILD_OS) GOARCH=$(VIAM_BUILD_ARCH) $(GO_BUILD_ENV) go build $(GO_BUILD_FLAGS) -o $(MODULE_BINARY) cmd/module/main.go
 
-build-arm64:
-	GOOS=linux GOARCH=arm64 go build -o bin/pn532-linux-arm64 cmd/module/main.go
-
-build-amd64:
-	GOOS=linux GOARCH=amd64 go build -o bin/pn532-linux-amd64 cmd/module/main.go
-
-build-darwin:
-	GOOS=darwin GOARCH=arm64 go build -o bin/pn532-darwin-arm64 cmd/module/main.go
-
 lint:
 	gofmt -s -w .
 
@@ -46,14 +37,3 @@ all: test module.tar.gz
 setup:
 	go mod tidy
 
-setup-dev:
-	@test -f .env || cp .env.template .env
-	@test -f viam-cli-data.json || echo '{"machines":{"my-machine":{"org_id":"","machine_id":"","part_id":"","location_id":"","machine_address":"","part_name":""}},"roles":{"dev_machine":"my-machine"}}' > viam-cli-data.json
-	@GO_PN532_PATH=$$(grep '^GO_PN532_PATH=' .env | cut -d= -f2); \
-	if [ -n "$$GO_PN532_PATH" ] && [ -d "$$GO_PN532_PATH" ]; then \
-		echo "go 1.25.1\nuse .\nuse $$GO_PN532_PATH" > go.work; \
-		echo "Created go.work with local go-pn532 at $$GO_PN532_PATH"; \
-	else \
-		echo "Skipping go.work: GO_PN532_PATH not set or directory not found"; \
-	fi
-	go mod tidy
