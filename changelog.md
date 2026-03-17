@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Skeleton sensor module implementing `rdk:component:sensor` with model `viam:nfc:pn532`
+- Skeleton sensor module implementing `rdk:component:sensor` with model `avery:nfc:pn532`
 - Config validation for transport selection (auto/uart/i2c/spi) and device paths
 - Stub Readings returning connection status shape for integration testing
 - Stub DoCommand with action parsing for write and diagnostic operations

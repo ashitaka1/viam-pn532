@@ -1,13 +1,18 @@
 {
   "$schema": "https://dl.viam.dev/module.schema.json",
-  "module_id": "viam:pn532",
-  "visibility": "private",
-  "url": "",
-  "description": "Modular sensor component: pn532",
-  "applications": null,
+  "module_id": "avery:nfc-pn532",
+  "visibility": "public",
+  "url": "https://github.com/ashitaka1/viam-pn532",
+  "description": "NXP PN532 NFC/RFID reader sensor supporting tag detection and NDEF read over UART, I2C, and SPI transports",
   "markdown_link": "README.md",
   "entrypoint": "bin/pn532",
   "first_run": "",
+  "models": [
+    {
+      "api": "rdk:component:sensor",
+      "model": "avery:nfc:pn532"
+    }
+  ],
   "build": {
     "build": "make module.tar.gz",
     "setup": "make setup",
@@ -15,8 +20,7 @@
     "arch": [
       "linux/amd64",
       "linux/arm64",
-      "darwin/arm64",
-      "windows/amd64"
+      "darwin/arm64"
     ]
   }
 }

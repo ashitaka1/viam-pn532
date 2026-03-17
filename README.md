@@ -28,7 +28,7 @@ Add the sensor component to your Viam machine config:
 {
   "name": "nfc-reader",
   "api": "rdk:component:sensor",
-  "model": "viam:nfc:pn532",
+  "model": "avery:nfc:pn532",
   "attributes": {
     "transport": "uart",
     "device_path": "/dev/ttyAMA0"
