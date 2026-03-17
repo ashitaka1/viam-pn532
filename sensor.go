@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	pn532 "github.com/ZaparooProject/go-pn532"
-	"github.com/ZaparooProject/go-pn532/polling"
-	"github.com/ZaparooProject/go-pn532/tagops"
+	pn532 "github.com/ashitaka1/go-pn532"
+	"github.com/ashitaka1/go-pn532/polling"
+	"github.com/ashitaka1/go-pn532/tagops"
 	sensor "go.viam.com/rdk/components/sensor"
 	"go.viam.com/rdk/logging"
 	"go.viam.com/rdk/resource"

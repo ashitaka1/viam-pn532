@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	pn532 "github.com/ZaparooProject/go-pn532"
-	transportI2C "github.com/ZaparooProject/go-pn532/transport/i2c"
-	transportSPI "github.com/ZaparooProject/go-pn532/transport/spi"
-	transportUART "github.com/ZaparooProject/go-pn532/transport/uart"
+	pn532 "github.com/ashitaka1/go-pn532"
+	transportI2C "github.com/ashitaka1/go-pn532/transport/i2c"
+	transportSPI "github.com/ashitaka1/go-pn532/transport/spi"
+	transportUART "github.com/ashitaka1/go-pn532/transport/uart"
 	"go.viam.com/rdk/logging"
 )
 

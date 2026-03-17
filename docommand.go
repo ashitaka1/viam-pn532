@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	pn532lib "github.com/ZaparooProject/go-pn532"
+	pn532lib "github.com/ashitaka1/go-pn532"
 )
 
 func (s *pn532Sensor) DoCommand(ctx context.Context, cmd map[string]interface{}) (map[string]interface{}, error) {
