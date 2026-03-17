@@ -3,7 +3,7 @@ module pn532
 go 1.25.1
 
 require (
-	github.com/ZaparooProject/go-pn532 v0.20.3
+	github.com/ashitaka1/go-pn532 v0.1.0
 	go.viam.com/rdk v0.113.0
 )
 
@@ -18,6 +18,7 @@ require (
 	codeberg.org/go-latex/latex v0.1.0 // indirect
 	codeberg.org/go-pdf/fpdf v0.10.0 // indirect
 	git.sr.ht/~sbinet/gg v0.6.0 // indirect
+	github.com/ZaparooProject/go-pn532 v0.20.3 // indirect
 	github.com/a8m/envsubst v1.4.2 // indirect
 	github.com/ajstarks/svgo v0.0.0-20211024235047-1546f124cd8b // indirect
 	github.com/apache/arrow/go/arrow v0.0.0-20201229220542-30ce2eb5d4dc // indirect
@@ -209,5 +210,3 @@ require (
 	periph.io/x/conn/v3 v3.7.2 // indirect
 	periph.io/x/host/v3 v3.8.5 // indirect
 )
-
-replace github.com/ZaparooProject/go-pn532 => github.com/ashitaka1/go-pn532 v0.20.4-0.20260219211758-0a46ff1efd57

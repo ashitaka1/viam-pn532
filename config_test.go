@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	pn532lib "github.com/ZaparooProject/go-pn532"
+	pn532lib "github.com/ashitaka1/go-pn532"
 	sensor "go.viam.com/rdk/components/sensor"
 	"go.viam.com/rdk/logging"
 )
