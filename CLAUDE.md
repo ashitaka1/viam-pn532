@@ -1,36 +1,24 @@
 # CLAUDE.md
 
-This file provides project-specific guidance to Claude Code (claude.ai/code) for this repository.
+Viam module wrapping the [go-pn532](https://github.com/ZaparooProject/go-pn532) NFC reader library (through the `ashitaka1/go-pn532` fork) as a `rdk:component:sensor`, model `avery:nfc:pn532`.
 
-## Current Status
+Tracking: GitHub issues (ashitaka1/viam-pn532)
 
-Project phase: Milestone 4 in progress
+- `README.md` — configuration and API
+- `CONTRIBUTING.md` — build, test, release
+- `ARCHITECTURE.md` — codemap, invariants, data flow
+- `docs/decisions/` — decision records
 
-DoCommand `await_scan` and `diagnostics` implemented; write actions (`write_text`, `write_ndef`) deferred pending writable test hardware. See `project_spec.md` for the full plan.
-
-## About This Project
-
-Viam module wrapping the [go-pn532](https://github.com/ZaparooProject/go-pn532) NFC reader library as a `rdk:component:sensor`. Deploys to SBCs (Raspberry Pi) running viam-server.
-
-See @project_spec.md for technical architecture, milestones, and implementation decisions.
-
-## Project-Specific Conventions
-
-### Testing
+## Commands
 
 ```bash
-make test          # Run all tests with race detection
-```
-
-Run a single test:
-```bash
+make test                          # all tests, with race detection
 go test -v -race -run TestName ./...
+make build                         # current platform
 ```
 
-### Build / Run
+## Invariants
 
-```bash
-make build         # Build for current platform
-make build-arm64   # Cross-compile for linux/arm64 (RPi)
-make build-amd64   # Cross-compile for linux/amd64
-```
+- `Readings()` reads cached state only; it never touches the device.
+- go-pn532's `Device` is not thread-safe. All device access goes through `polling.Session`: inside its callbacks, or through `PauseAndRun`.
+- PN532 protocol logic stays in go-pn532. A protocol fix goes to the fork, not this module.
