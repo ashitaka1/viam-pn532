@@ -142,35 +142,10 @@ Response:
 }
 ```
 
-## Building
+## Known issues
 
-```bash
-make build           # Build for current platform
-make build-arm64     # Cross-compile for linux/arm64 (Raspberry Pi)
-make build-amd64     # Cross-compile for linux/amd64
-make test            # Run tests with race detection
-```
-
-## Development
-
-The module delegates all PN532 protocol handling to go-pn532. Key architectural decisions:
-
-- **Single component model** — no reader/writer split; go-pn532's `polling.Session` coordinates access internally
-- **Readings are zero-cost** — background goroutine writes to cached state under a mutex; `Readings()` only reads memory
-- **Device is not thread-safe** — all hardware access flows through the polling session, which serializes operations
-
-### Project structure
-
-```
-cmd/module/main.go   Entry point (ModularMain)
-config.go            Config struct + validation
-sensor.go            Registration, struct, callbacks
-lifecycle.go         Reconfigure + Close
-transport.go         Transport factory + retry logic
-polling.go           Tag state caching
-readings.go          Readings() implementation
-docommand.go         DoCommand dispatch
-```
+- `transport: "auto"` is not supported; set `transport` and `device_path` explicitly.
+- Writing to tags (`write_text`, `write_ndef`) is not implemented.
 
 ## License
 
