@@ -2,7 +2,7 @@
 
 Viam module wrapping the [go-pn532](https://github.com/ZaparooProject/go-pn532) NFC reader library (through the `ashitaka1/go-pn532` fork) as a `rdk:component:sensor`, model `avery:nfc:pn532`.
 
-Tracking: GitHub issues (ashitaka1/viam-pn532)
+Tracking: GitHub issues (ashitaka1/viam-pn532); owner ashitaka1
 
 - `README.md` — configuration and API
 - `CONTRIBUTING.md` — build, test, release
